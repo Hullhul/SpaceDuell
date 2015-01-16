@@ -1,18 +1,18 @@
 package spaceduell;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SpaceObject {
-	private double mass;
+	private double mass,angle;
 	private Vector2D position, tempPosition, velocity, acceleration, imageCenter;
 	private ArrayList<Vector2D> trace = new ArrayList<Vector2D>();
 
 	private String type;
 
-	private Image image;
+	private BufferedImage image;
 	private ArrayList<SpaceObject> spaceObjects = Game.getSpaceObjects();
 	
 
@@ -77,11 +77,11 @@ public class SpaceObject {
 		this.mass = mass;
 	}
 
-	public Image getImage() {
+	public BufferedImage getImage() {
 		return image;
 	}
 
-	public void setImage(Image image) {
+	public void setImage(BufferedImage image) {
 		this.image = image;
 	}
 
@@ -139,6 +139,14 @@ public class SpaceObject {
 
 	public void setImageCenter(Vector2D imageCenter) {
 		this.imageCenter = imageCenter;
+	}
+
+	public double getAngle() {
+		return angle;
+	}
+
+	public void setAngle(double angle) {
+		this.angle = angle;
 	}
 
 }

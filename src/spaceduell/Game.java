@@ -2,18 +2,22 @@ package spaceduell;
 
 import java.applet.Applet;
 import java.awt.Color;
+import java.awt.Event;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
+
+import spaceduell.Ship.RotState;
 
 public class Game extends Applet implements Runnable, KeyListener {
 
@@ -26,13 +30,13 @@ public class Game extends Applet implements Runnable, KeyListener {
 	private Sun sun;
 	private Ship ship1, ship2, ship3;
 	private URL base;
-	private Image image, imageSun, imageShip1;
+	private BufferedImage image, imageSun, imageShip1, imageShip1Acc;
 
 	private static ArrayList<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
 
 	@Override
 	public void init() {
-		setSize(800, 480);
+		setSize(800, 800);
 		setBackground(Color.BLACK);
 		setFocusable(true);
 		addKeyListener(this);
@@ -46,16 +50,17 @@ public class Game extends Applet implements Runnable, KeyListener {
 		}
 
 		// Bildeinstellung
-		System.out.println(getCodeBase()+"data/sun1.png");
+		System.out.println(getCodeBase() + "data/sun1.png");
 		try {
 			imageSun = ImageIO.read(new URL(base, "data/sun1.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		try {
 			imageShip1 = ImageIO.read(new URL(base, "data/ship1.png"));
+			imageShip1Acc = ImageIO.read(new URL(base, "data/ship1_acc.png"));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,14 +69,12 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void start() {
-		sun = new Sun(400, 240, 0, 0, 100, imageSun);
-		//sun2 = new Sun(700, 240, 0, 0, 1, imageSun);
-		ship1 = new Ship(400, 0, 500, 0, 1, imageShip1);
-		ship2 = new Ship(400, 480, -500, 0, 1, imageShip1);
-		ship3 = new Ship(100, 240, 0, -300, 1, imageShip1);
+		sun = new Sun(400, 400, 0, 0, 10, imageSun);
+		ship1 = new Ship(400, 100, 150, 0, 0.1, imageShip1);
+		ship2 = new Ship(400, 700, -150, 0, 0.1, imageShip1);
+		ship3 = new Ship(100, 400, 0, -150, 0.1, imageShip1);
 
 		spaceObjects.add(sun);
-		//spaceObjects.add(sun2);
 		spaceObjects.add(ship1);
 		spaceObjects.add(ship2);
 		spaceObjects.add(ship3);
@@ -107,7 +110,8 @@ public class Game extends Applet implements Runnable, KeyListener {
 	@Override
 	public void update(Graphics g) {
 		if (image == null) {
-			image = createImage(this.getWidth(), this.getHeight());
+			image = (BufferedImage) createImage(this.getWidth(),
+					this.getHeight());
 			second = image.getGraphics();
 		}
 
@@ -121,11 +125,13 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void paint(Graphics g) {
-		
+
 		for (int i = 0; i < spaceObjects.size(); i++) {
 			drawTrace(g, spaceObjects.get(i));
 			g.drawImage(spaceObjects.get(i).getImage(), spaceObjects.get(i)
-					.getIntX()-spaceObjects.get(i).getIntCenterX(), spaceObjects.get(i).getIntY()-spaceObjects.get(i).getIntCenterY(), this);
+					.getIntX() - spaceObjects.get(i).getIntCenterX(),
+					spaceObjects.get(i).getIntY()
+							- spaceObjects.get(i).getIntCenterY(), this);
 		}
 	}
 
@@ -141,21 +147,59 @@ public class Game extends Applet implements Runnable, KeyListener {
 		g.drawPolyline(xvals, yvals, xvals.length);
 	}
 
+	private static BufferedImage rotateImage(BufferedImage src, double degrees) {
+		AffineTransform affineTransform = AffineTransform.getRotateInstance(
+				Math.toRadians(degrees), src.getWidth() / 2,
+				src.getHeight() / 2);
+		BufferedImage rotatedImage = new BufferedImage(src.getWidth(),
+				src.getHeight(), src.getType());
+		Graphics2D g = (Graphics2D) rotatedImage.getGraphics();
+		g.setTransform(affineTransform);
+		g.drawImage(src, 0, 0, null);
+		return rotatedImage;
+	}
+
 	@Override
-	public void keyPressed(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			Ship sss = (Ship) spaceObjects.get(2);
+			sss.setRotation(RotState.left);
+			spaceObjects.get(2).setAngle(spaceObjects.get(2).getAngle() - 10);
+			spaceObjects.get(2).setImage(
+					rotateImage(imageShip1, spaceObjects.get(2).getAngle()));
+			break;
+		case KeyEvent.VK_RIGHT:
+			spaceObjects.get(2).setAngle(spaceObjects.get(2).getAngle() + 10);
+			spaceObjects.get(2).setImage(
+					rotateImage(imageShip1, spaceObjects.get(2).getAngle()));
+			break;
+		case KeyEvent.VK_UP:
+			spaceObjects.get(2).setImage(
+					rotateImage(imageShip1Acc, spaceObjects.get(2).getAngle()));
+			break;
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_LEFT:
+			System.out.println("Stop dreh links");
+			break;
+		case KeyEvent.VK_RIGHT:
+			System.out.println("Stop dreh rechts");
+			break;
+		case KeyEvent.VK_UP:
+			spaceObjects.get(2).setImage(
+					rotateImage(imageShip1, spaceObjects.get(2).getAngle()));
+			break;
+		}
 
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
+	public void keyTyped(KeyEvent e) {
 
 	}
 

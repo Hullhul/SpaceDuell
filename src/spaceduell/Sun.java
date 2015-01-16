@@ -1,12 +1,12 @@
 package spaceduell;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class Sun extends SpaceObject {
 
-	public Sun(double xCoord, double yCoord, double xVel, double yVel, double mass, Image img){
+	public Sun(double xCoord, double yCoord, double xVel, double yVel, double mass, BufferedImage img){
 		Vector2D pos = new Vector2D(xCoord,yCoord);
 		Vector2D vel = new Vector2D(xVel,yVel);
 		Vector2D tempPos = new Vector2D(0,0);
@@ -18,6 +18,7 @@ public class Sun extends SpaceObject {
 		setTempPosition(tempPos);
 		setMass(mass);
 		setImage(img);
+		setAngle(0);
 		
 		setImageCenter(imgCenter);
 		
