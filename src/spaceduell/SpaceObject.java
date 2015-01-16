@@ -7,22 +7,26 @@ import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 
 public class SpaceObject {
 	private double mass;
-	private Vector2D position, tempPosition, velocity;
-	private Vector2D acceleration;
+	private Vector2D position, tempPosition, velocity, acceleration, imageCenter;
+	private ArrayList<Vector2D> trace = new ArrayList<Vector2D>();
+
+	private String type;
 
 	private Image image;
 	private ArrayList<SpaceObject> spaceObjects = Game.getSpaceObjects();
+	
 
 	void update() {
 		position = position.add(tempPosition);
+		trace.add(position);
 	}
 
 	void calculateMovement(double deltime) {
 		for (int i = 0; i < spaceObjects.size(); i++) {
-			if (!this.equals(spaceObjects.get(i))) {
+			if (checkTypes(i)) {
 				calculateGravition(this, spaceObjects.get(i));
 				velocity = velocity.add(acceleration.scalarMultiply(deltime));
-				tempPosition=(velocity.scalarMultiply(deltime));
+				tempPosition = (velocity.scalarMultiply(deltime));
 			}
 		}
 	}
@@ -34,7 +38,19 @@ public class SpaceObject {
 		distanceCube = Math.pow(
 				Vector2D.distance(obj2.getPosition(), obj1.getPosition()), 3);
 
-		obj1.setAcceleration(tmp1.scalarMultiply(obj2.getMass() / distanceCube * 1000000));
+		obj1.setAcceleration(tmp1.scalarMultiply(obj2.getMass() / distanceCube
+				* 1000000));
+	}
+
+	private boolean checkTypes(int i) {
+		boolean result = false;
+
+		if (!this.equals(spaceObjects.get(i))) {
+			if (type == "ship" && spaceObjects.get(i).type == "sun") {
+				result = true;
+			}
+		}
+		return result;
 	}
 
 	public int getIntX() {
@@ -43,6 +59,14 @@ public class SpaceObject {
 
 	public int getIntY() {
 		return (int) Math.round(position.getY());
+	}
+	
+	public int getIntCenterX() {
+		return (int) Math.round(imageCenter.getX());
+	}
+
+	public int getIntCenterY() {
+		return (int) Math.round(imageCenter.getY());
 	}
 
 	public double getMass() {
@@ -91,6 +115,30 @@ public class SpaceObject {
 
 	public void setAcceleration(Vector2D acceleration) {
 		this.acceleration = acceleration;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public ArrayList<Vector2D> getTrace() {
+		return trace;
+	}
+
+	public void setTrace(Vector2D vec) {
+		this.trace.add(vec);
+	}
+
+	public Vector2D getImageCenter() {
+		return imageCenter;
+	}
+
+	public void setImageCenter(Vector2D imageCenter) {
+		this.imageCenter = imageCenter;
 	}
 
 }
