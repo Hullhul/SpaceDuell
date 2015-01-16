@@ -10,16 +10,12 @@ import java.awt.event.KeyListener;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
-
 public class Game extends Applet implements Runnable, KeyListener {
 
 	private static double VERSIONNUMBER = 0.1;
 
 	private double time, deltatime;
 
-	private Vector2D vec = new Vector2D(1,2);
-	
 	private Graphics second;
 
 	private Sun sun;
@@ -51,8 +47,8 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void start() {
-		sun = new Sun(400, 240, 0, 0, 1000000000, imageSun);
-		ship1 = new Ship(50, 50, 0, 0, 1000000000, imageShip1);
+		sun = new Sun(400, 240, 0, 0, 100, imageSun);
+		ship1 = new Ship(400, 0, 500, 0, 1, imageShip1);
 
 		spaceObjects.add(sun);
 		spaceObjects.add(ship1);
@@ -64,23 +60,15 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void run() {
-			while (true) {
-			deltatime = (System.nanoTime() - time)/Math.pow(10, 9);
-			//for (int i = 0; i < spaceObjects.size(); i++) {
-			//	spaceObjects.get(i).calculateGravition(deltatime);
-			//}
-			double temp = Math.pow(Math.sqrt(Math.pow(sun.getCoordX()-ship1.getCoordX(),2)+Math.pow(sun.getCoordY()-ship1.getCoordY(),2)),3);
-			ship1.setTmpcoordX(0.5*deltatime*deltatime*sun.getMass()
-						* (sun.getCoordX()-ship1.getCoordX())
-						/temp);
-			ship1.setTmpcoordY(0.5*deltatime*deltatime*sun.getMass()
-					* (sun.getCoordY()-ship1.getCoordY())
-					/ temp);
-			
-			//for (int i = 0; i < spaceObjects.size(); i++) {
-			//	spaceObjects.get(i).update();
-			//}
-			ship1.update();
+		while (true) {
+			deltatime = (System.nanoTime() - time) / Math.pow(10, 9);
+			for (int i = 0; i < spaceObjects.size(); i++) {
+				spaceObjects.get(i).calculateMovement(deltatime);
+			}
+
+			for (int i = 0; i < spaceObjects.size(); i++) {
+				spaceObjects.get(i).update();
+			}
 			repaint();
 			time = System.nanoTime();
 			try {
@@ -110,8 +98,10 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void paint(Graphics g) {
-		g.drawImage(sun.getImage(), sun.getIntX(), sun.getIntY(), this);
-		g.drawImage(ship1.getImage(), ship1.getIntX(), ship1.getIntY(), this);
+		for (int i = 0; i < spaceObjects.size(); i++) {
+			g.drawImage(spaceObjects.get(i).getImage(), spaceObjects.get(i)
+					.getIntX(), spaceObjects.get(i).getIntY(), this);
+		}
 	}
 
 	@Override

@@ -3,57 +3,46 @@ package spaceduell;
 import java.awt.Image;
 import java.util.ArrayList;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
+
 public class SpaceObject {
-	private double coordX, coordY, veloX, veloY, tmpcoordX, tmpcoordY, mass;
+	private double mass;
+	private Vector2D position, tempPosition, velocity;
+	private Vector2D acceleration;
+
 	private Image image;
 	private ArrayList<SpaceObject> spaceObjects = Game.getSpaceObjects();
 
 	void update() {
-		coordX += tmpcoordX;
-		coordY += tmpcoordY;
+		position = position.add(tempPosition);
 	}
 
 	void calculateMovement(double deltime) {
 		for (int i = 0; i < spaceObjects.size(); i++) {
 			if (!this.equals(spaceObjects.get(i))) {
-				tmpcoordX = 0.5*spaceObjects.get(i).getMass()
-						* (spaceObjects.get(i).getCoordX()-this.coordX)
-						/ Math.pow(
-								Math.abs(spaceObjects.get(i).getCoordX()-this.coordX), 3)*Math.pow(deltime,2);
-				tmpcoordY = 0.5*spaceObjects.get(i).getMass()
-						* (spaceObjects.get(i).getCoordY()-this.coordY)
-						/ Math.pow(
-								Math.abs(spaceObjects.get(i).getCoordY()-this.coordY), 3)*Math.pow(deltime,2);
+				calculateGravition(this, spaceObjects.get(i));
+				velocity = velocity.add(acceleration.scalarMultiply(deltime));
+				tempPosition=(velocity.scalarMultiply(deltime));
 			}
 		}
 	}
-	
-	void calculateGravition(){
-		
+
+	void calculateGravition(SpaceObject obj1, SpaceObject obj2) {
+		Vector2D tmp1;
+		double distanceCube;
+		tmp1 = obj2.getPosition().subtract(obj1.getPosition());
+		distanceCube = Math.pow(
+				Vector2D.distance(obj2.getPosition(), obj1.getPosition()), 3);
+
+		obj1.setAcceleration(tmp1.scalarMultiply(obj2.getMass() / distanceCube * 1000000));
 	}
 
 	public int getIntX() {
-		return (int) Math.round(coordX);
+		return (int) Math.round(position.getX());
 	}
 
 	public int getIntY() {
-		return (int) Math.round(coordY);
-	}
-
-	public double getCoordX() {
-		return coordX;
-	}
-
-	public void setCoordX(double coordX) {
-		this.coordX = coordX;
-	}
-
-	public double getCoordY() {
-		return coordY;
-	}
-
-	public void setCoordY(double coordY) {
-		this.coordY = coordY;
+		return (int) Math.round(position.getY());
 	}
 
 	public double getMass() {
@@ -64,46 +53,44 @@ public class SpaceObject {
 		this.mass = mass;
 	}
 
-	public double getVeloX() {
-		return veloX;
-	}
-
-	public void setVeloX(double veloX) {
-		this.veloX = veloX;
-	}
-
-	public double getVeloY() {
-		return veloY;
-	}
-
-	public void setVeloY(double veloY) {
-		this.veloY = veloY;
-	}
-
 	public Image getImage() {
 		return image;
-	}
-
-	public double getTmpcoordX() {
-		return tmpcoordX;
-	}
-
-	public void setTmpcoordX(double tmpcoordX) {
-		this.tmpcoordX = tmpcoordX;
-	}
-
-	public double getTmpcoordY() {
-		return tmpcoordY;
-	}
-
-	public void setTmpcoordY(double tmpcoordY) {
-		this.tmpcoordY = tmpcoordY;
 	}
 
 	public void setImage(Image image) {
 		this.image = image;
 	}
-	
-	
+
+	public Vector2D getPosition() {
+		return position;
+	}
+
+	public void setPosition(Vector2D position) {
+		this.position = position;
+	}
+
+	public Vector2D getTempPosition() {
+		return tempPosition;
+	}
+
+	public void setTempPosition(Vector2D tempPosition) {
+		this.tempPosition = tempPosition;
+	}
+
+	public Vector2D getVelocity() {
+		return velocity;
+	}
+
+	public void setVelocity(Vector2D velocity) {
+		this.velocity = velocity;
+	}
+
+	public Vector2D getAcceleration() {
+		return acceleration;
+	}
+
+	public void setAcceleration(Vector2D acceleration) {
+		this.acceleration = acceleration;
+	}
 
 }
