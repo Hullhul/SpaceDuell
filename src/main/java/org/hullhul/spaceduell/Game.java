@@ -1,4 +1,4 @@
-package spaceduell;
+package org.hullhul.spaceduell;
 
 import java.applet.Applet;
 import java.awt.Color;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
-import spaceduell.Ship.RotState;
+import org.hullhul.spaceduell.Ship.RotState;
 
 public class Game extends Applet implements Runnable, KeyListener {
 
@@ -31,7 +31,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 	private BufferedImage image, imageSun, imageShip1, imageShip1Acc;
 
 	private static ArrayList<SpaceObject> spaceObjects = new ArrayList<SpaceObject>();
-
+	
 	@Override
 	public void init() {
 		setSize(800, 800);
@@ -41,28 +41,10 @@ public class Game extends Applet implements Runnable, KeyListener {
 		Frame frame = (Frame) this.getParent().getParent();
 		frame.setTitle("Space Duell Version " + VERSIONNUMBER);
 
-		try {
-			base = getCodeBase();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
 		// Bildeinstellung
-		System.out.println(getCodeBase() + "data/sun1.png");
-		try {
-			imageSun = ImageIO.read(new URL(base, "data/sun1.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			imageShip1 = ImageIO.read(new URL(base, "data/ship1.png"));
-			imageShip1Acc = ImageIO.read(new URL(base, "data/ship1_acc.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		imageSun = ResUtil.readImage(this, "sun1.png");
+		imageShip1 = ResUtil.readImage(this, "ship1.png");
+		imageShip1Acc = ResUtil.readImage(this, "ship1_acc.png");
 	}
 
 	@Override

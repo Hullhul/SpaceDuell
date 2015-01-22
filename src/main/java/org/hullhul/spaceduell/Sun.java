@@ -1,4 +1,4 @@
-package spaceduell;
+package org.hullhul.spaceduell;
 
 import java.awt.image.BufferedImage;
 
