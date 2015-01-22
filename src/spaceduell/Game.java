@@ -27,8 +27,6 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	private Graphics second;
 
-	private Sun sun;
-	private Ship ship1, ship2, ship3;
 	private URL base;
 	private BufferedImage image, imageSun, imageShip1, imageShip1Acc;
 
@@ -69,15 +67,11 @@ public class Game extends Applet implements Runnable, KeyListener {
 
 	@Override
 	public void start() {
-		sun = new Sun(400, 400, 0, 0, 10, imageSun);
-		ship1 = new Ship(400, 100, 150, 0, 0.1, imageShip1);
-		ship2 = new Ship(400, 700, -150, 0, 0.1, imageShip1);
-		ship3 = new Ship(100, 400, 0, -150, 0.1, imageShip1);
-
-		spaceObjects.add(sun);
-		spaceObjects.add(ship1);
-		spaceObjects.add(ship2);
-		spaceObjects.add(ship3);
+		spaceObjects.add(new Sun(400, 400, 0, 0, 10, imageSun));
+		spaceObjects.add(new Sun(700, 400, 0, 0, 10, imageSun));
+		spaceObjects.add(new Ship(400, 100, 100, 0, 1, imageShip1));
+		spaceObjects.add(new Ship(400, 700, -100, 0, 0.1, imageShip1));
+		spaceObjects.add(new Ship(100, 400, 0, -100, 0.1, imageShip1));
 
 		time = System.nanoTime();
 		Thread thread = new Thread(this);
@@ -88,6 +82,7 @@ public class Game extends Applet implements Runnable, KeyListener {
 	public void run() {
 		while (true) {
 			deltatime = (System.nanoTime() - time) / Math.pow(10, 9);
+			//deltatime=0.020;
 			for (int i = 0; i < spaceObjects.size(); i++) {
 				spaceObjects.get(i).calculateMovement(deltatime);
 			}
